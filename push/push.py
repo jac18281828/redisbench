@@ -4,7 +4,7 @@ import json
 import time
 
 SENTINEL = b'########END########'
-NRUN = 1 # 2000 each
+NRUN = 250 # 2000 each
 
 def push_redis(h:str, file:str):
     queue_key = 'Z0' + ':' + 'dispatchqueue'
