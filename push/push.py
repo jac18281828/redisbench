@@ -3,6 +3,8 @@ import sys
 import json
 import time
 
+SENTINEL = b'########END########'
+
 if __name__ == '__main__':
 
     if len(sys.argv) == 3:
@@ -16,17 +18,17 @@ if __name__ == '__main__':
         with redis.Redis(host=h, port=6379, db=1) as r:
             start_wait = True
             while start_wait:
-                begin = r.brpop(queue_key, timeout=10)
+                begin = r.blpop(queue_key, timeout=10)
                 if begin is not None:
                     start_wait = False
                 else:
                     print('Idle')
             print('Starting')
-            for _ in range(10):
+            for _ in range(100):
                 with open(file, 'r') as txnstream:
                     txn = json.load(txnstream)
                     for t in txn:
-                        r.lpush(queue_key, json.dumps(t))
+                        r.rpush(queue_key, json.dumps(t))
                         len = r.llen(queue_key)
                         if len > 500:
                             print('%s len %d' % (queue_key, len))
@@ -34,7 +36,7 @@ if __name__ == '__main__':
                                 print(' -- Warning Length with Trim! -- ')
                         if len > 10000:
                             r.ltrim(queue_key, 0, 10000)
-            r.lpush(queue_key, b'########END########')
+            r.lpush(queue_key, SENTINEL)
     else:
         print('%s hostname filename' % sys.argv[0])
         sys.exit(1)

@@ -3,6 +3,8 @@ import sys
 import json
 import time
 
+SENTINEL = b'########END########'
+
 if __name__ == '__main__':
 
     if len(sys.argv) == 2:
@@ -12,15 +14,17 @@ if __name__ == '__main__':
         queue_key = 'Z0' + ':' + 'dispatchqueue'
 
         with redis.Redis(host=h, port=6379, db=1) as r:
-            r.lpush(queue_key, b'start')
+            time.sleep(10)
+            r.rpush(queue_key, b'start')
             print('Starting')
             count = 0
             start = time.time()
             is_running = True
             while is_running:
-                txn = r.brpop(queue_key, timeout=1)
+                txn = r.blpop(queue_key, timeout=1)
                 if txn is not None:
-                    if list(txn[1]) == list(b'########END########'):
+                    payload = txn[1]
+                    if len(txn[1]) == len(SENTINEL) and list(txn[1]) == list(SENTINEL):
                         is_running = False
                     else:
                         count += 1
