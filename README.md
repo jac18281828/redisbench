@@ -2,7 +2,7 @@
 
 ## Use Redis as a FIFO Queue
 
-1. Python client injects 500,000 messages as encoded json on REDIS key
+1. Python client injects 200,000 messages as encoded json on REDIS key
 2. Another client performs a blocking pop of each message and counts the event rate
 
 ### Hardware
@@ -32,6 +32,8 @@ $ docker-compose build && docker-compose up --scale puller=5
 
 ## Results
 
+![11000/s pipelined](plot/output/redispipeline.jpg)
+
 1x1
 
 # Push followed by ltrim
@@ -55,7 +57,7 @@ puller_1  | INFO:root:145013 events
 puller_1  | INFO:root:2719.217568/s
 ```
 
-
+# Push to 5 listening processes
 1x5
 ```
 pusher_1  | INFO:root:200000 sent on 5 puller
@@ -72,6 +74,10 @@ puller_5  | INFO:root:40000 events
 puller_5  | INFO:root:634.297735/s
 ```
 
+# Push 5 messages at a time pipelined
+
+The follower can not keep up with the sending rate
+
 1x1 Pipelined
 ```
 pusher_1  | INFO:root:200000 sent on 1 puller
@@ -79,6 +85,8 @@ pusher_1  | INFO:root:11041.361446/s
 puller_1  | INFO:root:200000 events
 puller_1  | INFO:root:2665.768506/s
 ```
+
+# Push 5 messages at a time pipelined to 5 followers
 
 1x5 Pipelined
 ```
@@ -95,3 +103,4 @@ puller_4  | INFO:root:1854.587463/s
 puller_5  | INFO:root:99626 events
 puller_5  | INFO:root:1851.010421/s
 ```
+
