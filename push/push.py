@@ -67,24 +67,18 @@ class DataPusher:
         for _ in range(NRUN):            
             with open(file, 'r') as txnstream:
                 txn = json.load(txnstream)
+                pipeline = self.rcli.pipeline()
                 for t in txn:
                     queue_index = self.count % n_puller
                     queue_key = 'Z' + str(queue_index) + ':' + 'dispatchqueue'
-                    self.rcli.lpush(queue_key, json.dumps(t))
+                    pipeline.lpush(queue_key, json.dumps(t))
+                    if queue_index == self.count -1:
+                        pipeline.execute()
+                        pipeline = self.rcli.pipeline()
                     self.count += 1
-                    len = self.rcli.llen(queue_key)
-                    is_log_once = False
-                    while len > 500:
-                        if not is_log_once:
-                            is_log_once = True
-                            logging.warning('%s len %d' % (queue_key, len))
-                        else:
-                            pass
-                        if len > 10000:
-                            logging.error(' -- Warning Length with Trim! -- ')
-                            self.rcli.ltrim(queue_key, 0, 10000)
                     if self.count % 25000 == 0:
                         self.log_stats()
+                pipeline.execute()
         self.log_stats()
 
         

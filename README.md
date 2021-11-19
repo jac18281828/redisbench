@@ -61,3 +61,18 @@ puller_5  | INFO:root:100000 events
 puller_5  | INFO:root:435.999057/s
 ```
 
+1x5 Pipelined
+```
+pusher_1  | INFO:root:500000 sent on 5 puller
+pusher_1  | INFO:root:8940.080857/s
+puller_1  | INFO:root:99626 events
+puller_1  | INFO:root:1812.246342/s
+puller_2  | INFO:root:99624 events
+puller_2  | INFO:root:1806.767998/s
+puller_3  | INFO:root:99624 events
+puller_3  | INFO:root:1804.095537/s
+puller_4  | INFO:root:99626 events
+puller_4  | INFO:root:1661.505489/s
+puller_5  | INFO:root:99623 events
+puller_5  | INFO:root:1803.397145/s
+```
