@@ -1,4 +1,4 @@
-# REDIS Benchmarkk
+# REDIS Benchmark
 
 ## Use Redis as a FIFO Queue
 
