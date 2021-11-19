@@ -1,0 +1,5 @@
+push/trim 2280
+"push 1x1" 4102
+"push 1x5" 3400
+"pipeline 1x1" 11000
+"pipeline 1x5" 9150
